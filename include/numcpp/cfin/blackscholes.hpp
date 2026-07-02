@@ -1,5 +1,6 @@
 #pragma once 
 #include <functional>
+#include <cmath>
 #include <numcpp/optim/newtonraphson.hpp>
 
 namespace numcpp::cfin {
