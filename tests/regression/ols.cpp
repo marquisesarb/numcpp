@@ -1,5 +1,5 @@
-#include "Eigen/Core"
 #include <numcpp/regression/ols.hpp>
+#include <cassert>
 
 bool isClose(double a, double b, double eps) { return std::abs(a-b)<eps;}
 
