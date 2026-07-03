@@ -12,6 +12,7 @@ namespace numcpp::optim {
         int iter;
         int maxIter; 
         double toleranceThreshold; 
+        bool converged;
 
         Bisection(
             double a,
@@ -31,21 +32,22 @@ namespace numcpp::optim {
 
                 x = std::numeric_limits<double>::quiet_NaN(); 
                 fx = std::numeric_limits<double>::quiet_NaN(); 
-                iter = 0; 
+                converged = false;
 
             } else {
 
                 x = a;
                 fx = fa;
 
-                for (int i = 1; i <= maxIter; ++i) {
-                    iter++;
+                while (true) {
+                    
 
                     x = 0.5 * (a + b);
                     fx = fun(x);
+                    iter++;
 
-                    if (std::abs(fx) < toleranceThreshold) break;
-                    if (std::abs(b - a) < toleranceThreshold) break;
+                    if (std::abs(fx) < toleranceThreshold) {converged = true; break;}
+                    if (std::abs(b - a) < toleranceThreshold) {converged = true; break;}
 
                     if (fa * fx < 0) {
                         b = x;
@@ -54,6 +56,8 @@ namespace numcpp::optim {
                         a = x;
                         fa = fx;
                     }
+
+                    if (iter == maxIter){converged = false; break;}
                 }
             } 
         }
