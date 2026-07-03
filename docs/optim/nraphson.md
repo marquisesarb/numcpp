@@ -8,5 +8,6 @@ The class NewtonRaphson has two constrcutors:
 
 
 The algortihm to modify the root's guess is given by: 
+
 $$ x^{n+1} = x_n - \frac{f(x_n)}{f'(x_n)} $$
 
