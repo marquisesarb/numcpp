@@ -7,6 +7,7 @@ with $h_i = (x-x_i)$ and $i=0,1,..,n-1$. Since there are 4 coefficients and $n$ 
 - $C^1$ condition ($n-1$ equations): $S'_{i-1}(x_i) = S'_i(x_i)$
 - $C^2$ condition ($n-1$ equations): $S''_{i-1}(x_i) = S''_i(x_i)$
 - Natural boundaries conditions (2 equations): $S''(x_0) = 0, S''(x_n) = 0$
+
 From the $C^2$ condition we can define the term $M_i$ being the second derivative of $S(x)$ at $x_i$ such that: 
 $$M_i = S''_{i-1}(x_i) = S''_i(x_i) = 2c_i \Longleftrightarrow c_i = M_i/2$$
 Furthermore, we also know $M_{i+1}$ at $i$ since: 
