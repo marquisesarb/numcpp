@@ -30,6 +30,7 @@ void testGaussLaguerreHighDimension() {
 }
 
 int main() {
+
     testGaussLaguerre();
     testGaussLaguerreHighDimension();
     return 0;

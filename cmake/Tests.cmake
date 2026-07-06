@@ -20,6 +20,8 @@ set(TESTS
     testnumcpp-cfin-nss tests/cfin/nss.cpp
     testnumcpp-interpolation tests/interpolation/test.cpp
     testnumcpp-reg-ols tests/regression/ols.cpp
+
+    testnumcpp-pdetest tests/pdetest.cpp
 )
 
 while(TESTS)

@@ -1,6 +1,7 @@
 #include <numcpp/stats/distributions/uniform.hpp>
 #include <numcpp/optim/brent.hpp>
 #include <cassert>
+#include <iostream>
 
 
 std::pair<double,double> bruteMinimum(double a, double b, const std::function<double(double)>& f, int N) {
@@ -32,7 +33,7 @@ void testBrentRandomQuadratic() {
     for (int i = 0; i<1000; i++) {
        
         std::function<double(double)> f = randomQuadratic(gen); 
-        numcpp::optim::Brent res(f, -10.0, 10.0,50,1e-10); 
+        numcpp::optim::Brent res(-10.0, 10.0,f,50,1e-10); 
         
         assert(std::abs(res.fx) < 1e-6);
     }
@@ -45,7 +46,7 @@ void testOscilllaryFunction() {
     };
 
     std::pair<double,double> brut = bruteMinimum(-5.0,5.0,f,10000);
-    numcpp::optim::Brent brent(f,-5.0,5.0,50,1e-15);
+    numcpp::optim::Brent brent(-5.0,5.0,f,50,1e-15);
 
     assert(std::abs(brut.first-brent.x)<1e-4);
     assert(std::abs(brut.second-brent.fx)<1e-5);
@@ -58,7 +59,24 @@ void testScaledQuadratic() {
     };
 
    std::pair<double,double> brut = bruteMinimum(-5.0,5.0,f,10000);
-    numcpp::optim::Brent brent(f,-5.0,5.0,50,1e-15);
+    numcpp::optim::Brent brent(-5.0,5.0,f,50,1e-15);
+
+    assert(std::abs(brut.first-brent.x)<1e-4);
+    assert(std::abs(brut.second-brent.fx)<1e-5);
+};
+
+void testIndranilGhosh() {
+
+    auto f = [](double x) {
+        return (x+3)*(x-1)*(x-1);
+    };
+
+    std::pair<double,double> brut = bruteMinimum(-5.0,5.0,f,10000);
+    numcpp::optim::Brent brent(-4.0,-1.0,f,50,1e-7);
+
+    std::cout << brent.x << std::endl;
+    std::cout << brent.fx << std::endl;
+    std::cout << brent.iter << std::endl;
 
     assert(std::abs(brut.first-brent.x)<1e-4);
     assert(std::abs(brut.second-brent.fx)<1e-5);
@@ -69,4 +87,6 @@ int main() {
     testBrentRandomQuadratic();
     testOscilllaryFunction();
     testScaledQuadratic();
+    testIndranilGhosh();
+    return 0;
 }

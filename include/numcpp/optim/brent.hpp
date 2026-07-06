@@ -11,11 +11,12 @@ namespace numcpp::optim {
         int iter;
         int maxIter; 
         double toleranceThreshold; 
+        bool converged;
 
         Brent(
-            const std::function<double(double)>& fun, 
             double ax, 
             double bx, 
+            const std::function<double(double)>& fun, 
             int maxIter_ = 100, 
             double toleranceThreshold_ = 1e-12) {
 
@@ -39,13 +40,13 @@ namespace numcpp::optim {
             double d = 0.0;  
             double e = 0.0;  
 
-            for (int i = 0; i < maxIter; ++i) {
+            while (true) {
 
                 double m = 0.5 * (a + b);
                 double tol1 = toleranceThreshold * std::abs(x) + 1e-12;
                 double tol2 = 2.0 * tol1;
 
-                if (std::abs(x - m) <= tol2 - 0.5 * (b - a)) break;
+                if (std::abs(x - m) <= tol2 - 0.5 * (b - a))  {converged = true; break;}
 
                 bool parabolicStepAccepted = false;
 
@@ -94,6 +95,8 @@ namespace numcpp::optim {
                         v = u; fv = fu;
                     }
                 }
+
+                if (iter == maxIter) {converged = false; break;}
 
                 e = d;
                 iter++;

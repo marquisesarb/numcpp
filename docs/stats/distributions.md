@@ -19,3 +19,27 @@ The chi-quared distribution with parameter $\nu$ is a special case of the Gamma 
 #### T-Student
 
 The T-Student is a continuous probability distribution with parameter $\nu$. See the wikki page for more info: https://fr.wikipedia.org/wiki/Loi_de_Student 
+
+
+#### C++ snippet example
+
+```cpp
+int main() {
+
+    numcpp::stats::ChiSquaredDistribution cs{2.0};
+    numcpp::stats::GammaDistribution g{2.0,2.0};
+    numcpp::stats::TStudentDistribution t{2.0};
+    numcpp::stats::NormalDistribution n{2.0,3.0};
+
+
+    std::cout << t.pdf(3.0) << std::endl;
+    // 0.02741012223
+    std::cout << g.pdf(7.0) << std::endl;
+    // 0.05284542099
+    std::cout << cs.pdf(7.0) << std::endl;
+    // 0.01509869171
+    std::cout << n.cdf(5.0) << std::endl;
+    // 0.841344746
+
+}
+```

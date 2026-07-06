@@ -25,3 +25,28 @@ Finally, from the $C^1$ conditions, we get:
 $$b_i = b_{i-1} + c_{i-1}h_{i-1} + 3d_{i-1}h_{i-1}^2 \Longleftrightarrow h_{i-1}M_{i-1} + 2(h_{i-1} + h_i)M_i + h_iM_{i+1} = 6 \left[\frac{y_{i+1}-y_i}{h_i} -\frac{y_i - y_{i-1}}{h_{i-1}}\right]$$
 
 with $M_0 = 0$ and $M_n = 0$. This is a tri-diagonal system which can be efficiently solved using Thomas algorithm ($O(n)$ linear time complexity). Once the vector of $M$ is found, all parameters of the cubic spline can be implied. 
+
+#### C++ snippet example
+
+```cpp
+int main() {
+
+    std::map<double, double> testData = {
+        {1.0, 2.0},
+        {2.0, 3.0},
+        {3.0, 5.0},
+        {4.0, 7.0},
+        {5.0, 11.0}
+    };
+
+    numcpp::interpolation::CubicSpline cubic(testData);
+    
+    std::cout << cubic.evaluate(1.5) << std::endl;
+    // 2.38616
+    std::cout << cubic.evaluateFirstDerivative(1.5) << std::endl;
+    // 0.924107
+    std::cout << cubic.evaluateSecondDerivative(3.5) << std::endl;
+    // 1.01786
+
+}
+```
