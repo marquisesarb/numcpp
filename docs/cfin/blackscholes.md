@@ -27,6 +27,7 @@ $$
 $$
 
 By setting $x = \log(S/S_0)$ and using the chain-rul for derivatives, one can obtain the simplified PDE: 
+
 $$
 \partial_t V + \frac{\sigma^2}{2} \partial^2_x V + (\mu - \frac{1}{2}\sigma^2) \partial_x V - r V = 0
 $$
@@ -38,6 +39,7 @@ $$
 $$
 
 which leads to the following recursive scheme: 
+
 $$
 V^j_n = \frac{1}{1+r\Delta T} \left(p^{u}_{n+1} V^{j+1}_{n+1} + p^{m}_{n+1} V^{j}_{n+1} + p^{d}_{n+1} V^{j-1}_{n+1} \right)
 $$
@@ -55,9 +57,11 @@ p^{m}_{n+1} = 1 - \frac{\sigma^2 \Delta T}{(\Delta x_{n+1})^2}
 $$
 
 it follows that $p^{u}_{n+1} + p^{d}_{n+1} + p^{m}_{n+1} = 1$ and thus each "probability" should be a quantity between 0 and 1 for stability. One common trick is to fix $\sigma_m$ value as: 
+
 $$ 
 \sigma_m = \max(5*(\mu - \sigma^2/2)\sqrt{\Delta T}, \sqrt{2}*\sigma)
 $$
+
 and fix $\Delta x = \sigma_m\sqrt{\Delta T}$.
 
 General boundaries condition can be applied which satisfies many different payoff. First note that the absorbing state $S_t = 0$ means that the payoff becomes fixed and display the following dynamic:
@@ -73,6 +77,8 @@ $$
 $$
 
 Which leads to: 
+
 $$
 V^M_{n} =  \frac{1}{1+r\Delta T}\left(p^{u}_{n+1} V^M_{n+1} + (2p^{m}_{n+1} - p^u_{n+1}) V^{M-1}_{n+1} + (2p^{d}_{n+1} - p^m_{n+1}) V^{M-2}_{n+1} + p^{d}_{n+1}V^{M-3}_{n+1}\right)
 $$
+
