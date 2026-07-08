@@ -18,21 +18,21 @@ $$
 \mu_t = \frac{\partial \ln F_t(T)}{\partial T} \mid_{T=t}
 $$
 
-#### Solving Black-Scholes PDE 
-
-Given the Black Scholes SDE, it is possible to find the process of any derivative $V_t(S_t,t)$ with boundary conditions $V(S_T,T)$ using Ito's lemma and the argument of arbitrage-freeness. The final dynamic is given by: 
+Furthermore, given a derivative asset $V_t$ written on $S_t$ and with boundary condition $V_T$, its dynamic can be written using Ito's lemma: 
 
 $$
 \partial_t V + \frac{\sigma^2 S^2}{2} \partial^2_S V + \mu S \partial_S V - r V = 0
 $$
 
-By setting $x = \log(S/S_0)$ and using the chain-rul for derivatives, one can obtain the simplified PDE: 
+By setting $x = \log(S/S_0)$ and using the chain-rule, one can obtain the simplified PDE: 
 
 $$
 \partial_t V + \frac{\sigma^2}{2} \partial^2_x V + (\mu - \frac{1}{2}\sigma^2) \partial_x V - r V = 0
 $$
 
-Time $T$ is discretizerd in $N$ equal periods $\Delta T = T/N$ such that $t_n = n\Delta T$. The call option values are also discretized for $M$ possible moneyness $x_n^j$ with $j = 0,1,..., M$. This leads to the following discretization of the previously described PDE: 
+#### 1) Explicit numerical method for solving the PDE
+
+The discretization is written as: 
 
 $$
 \frac{V^{j}_{n+1} - V_n^{j}}{\Delta T} + \frac{\sigma^2}{2} \frac{V^{j+1}_{n+1} + V^{j-1}_{n+1} - 2V^{j}_{n+1}}{(\Delta x_{n+1})^2} + (\mu - \frac{1}{2}\sigma^2) \frac{V^{j+1}_{n+1} - V^{j-1}_{n+1}}{2\Delta x_{n+1}} - rV^j_{n} = 0
@@ -47,22 +47,24 @@ $$
 with: 
 
 $$
-p^{u}_{n+1} = \frac{\sigma^2 \Delta T}{2 (\Delta x_{n+1})^2} + \frac{(\mu_{n+1} - \sigma^2/2)\Delta T}{2\Delta x_{n+1}}
+p^{u} = \frac{\sigma^2 \Delta T}{2 (\Delta x)^2} + \frac{(\mu - \sigma^2/2)\Delta T}{2\Delta x}
 $$
 $$
-p^{d}_{n+1} = \frac{\sigma^2 \Delta T}{2 (\Delta x_{n+1})^2} - \frac{(\mu_{n+1} - \sigma^2/2)\Delta T}{2\Delta x_{n+1}}
+p^{d} = \frac{\sigma^2 \Delta T}{2 (\Delta x)^2} - \frac{(\mu - \sigma^2/2)\Delta T}{2\Delta x}
 $$
 $$
-p^{m}_{n+1} = 1 - \frac{\sigma^2 \Delta T}{(\Delta x_{n+1})^2}
+p^{m} = 1 - \frac{\sigma^2 \Delta T}{(\Delta x)^2}
 $$
 
-it follows that $p^{u}_{n+1} + p^{d}_{n+1} + p^{m}_{n+1} = 1$ and thus each "probability" should be a quantity between 0 and 1 for stability. One common trick is to fix $\sigma_m$ value as: 
+it follows that $p^{u} + p^{d} + p^{m} = 1$. For stability, each quantity should behave as probability as this scheme is simply a trinominal tree. Note that the "probability" constraint requires that: 
 
 $$ 
-\sigma_m = \max(5*(\mu - \sigma^2/2)\sqrt{\Delta T}, \sqrt{2}*\sigma)
+p^m \in (0,1) \Longleftrightarrow \frac{\sigma^2 \Delta T}{(\Delta x)^2} < 1 
 $$
 
-and fix $\Delta x = \sigma_m\sqrt{\Delta T}$.
+$$ 
+p^u, p^d \in (0,1) \Longleftrightarrow \mid \mu - \sigma^2/2 \mid \Delta T / \Delta x < \frac{1}{2}
+$$
 
 General boundaries condition can be applied which satisfies many different payoff. First note that the absorbing state $S_t = 0$ means that the payoff becomes fixed and display the following dynamic:
 
@@ -84,3 +86,28 @@ $$
 
 
 
+#### 2) Implicit numerical method for solving the PDE
+
+The discretization is written as: 
+
+$$
+\frac{V^{j}_{n+1} - V_n^{j}}{\Delta T} + \frac{\sigma^2}{2} \frac{V^{j+1}_{n} + V^{j-1}_{n} - 2V^{j}_{n}}{(\Delta x)^2} + (\mu - \frac{1}{2}\sigma^2) \frac{V^{j+1}_{n} - V^{j-1}_{n}}{2\Delta x} - rV^j_{n} = 0
+$$
+
+When reorganized, this reads as: 
+
+$$
+V^{j}_{n+1} = \left(1 + r\Delta T + \frac{\sigma^2 \Delta T}{(\Delta x)^2}\right) V^j_n + \left(-\frac{\sigma^2 \Delta T}{2(\Delta x)^2} - \frac{(\mu - \sigma^2/2)\Delta T}{2\Delta x}\right) V^{j+1}_n + \left(-\frac{\sigma^2 \Delta T}{2(\Delta x)^2} + \frac{(\mu - \sigma^2/2)\Delta T}{2\Delta x}\right) V^{j-1}_n
+$$
+
+Similar to the explicit method, we have the following boundary conditions: 
+
+$$
+V^0_{n+1} = (1+ r\Delta T) V^0_n
+$$
+
+$$
+V^M_{n+1} = 2V^{M-1}_{n+1} - V^{M-2}_{n+1}
+$$
+
+note that $V^M_{n+1}$ can be expressed in terms of $V^{M-1}_{n}$ and $V^{M-2}_{n}$
