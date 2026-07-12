@@ -11,17 +11,24 @@ set(TESTS
     testnumcpp-optim-bisection tests/optim/bisection.cpp
     testnumcpp-optim-secant tests/optim/secant.cpp
     testnumcpp-optim-brent tests/optim/brent.cpp
-    testnumcpp-cfin-bs tests/cfin/bs.cpp
-    testnumcpp-cfin-baw tests/cfin/baw.cpp
-    testnumcpp-cfin-bachelier tests/cfin/bachelier.cpp
-    #testnumcpp-cfin-bssim tests/cfin/bssim.cpp
-    testnumcpp-cfin-heston tests/cfin/heston.cpp
-    #testnumcpp-cfin-hestonqesim tests/cfin/hestonqesim.cpp
-    testnumcpp-cfin-nss tests/cfin/nss.cpp
-    testnumcpp-interpolation tests/interpolation/test.cpp
     testnumcpp-reg-ols tests/regression/ols.cpp
+    testnumcpp-interpolation tests/interpolation/test.cpp
+    testnumcpp-solvers-tridiagthomas tests/solvers/tridiagthomas.cpp
 
-    testnumcpp-pdetest tests/pdetest.cpp
+    testnumcpp-cfin-nss tests/cfin/nss.cpp
+    testnumcpp-cfin-ssvi tests/cfin/ssvi.cpp
+
+    testnumcpp-cfin-blackscholes-cf tests/cfin/blackscholes/cf.cpp
+    testnumcpp-cfin-blackscholes-mcbs tests/cfin/blackscholes/mcbs.cpp
+    testnumcpp-cfin-blackscholes-mclv tests/cfin/blackscholes/mclv.cpp
+    testnumcpp-cfin-blackscholes-baw tests/cfin/blackscholes/baw.cpp
+    testnumcpp-cfin-blackscholes-pdesolver-vanilla tests/cfin/blackscholes/pdesolver/vanilla.cpp
+
+    testnumcpp-cfin-bachelier-cf tests/cfin/bachelier/cf.cpp
+
+    testnumcpp-cfin-heston-cf tests/cfin/heston/cf.cpp
+    testnumcpp-cfin-heston-qemc tests/cfin/heston/qemc.cpp
+
 )
 
 while(TESTS)

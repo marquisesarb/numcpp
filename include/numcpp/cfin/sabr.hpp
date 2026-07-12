@@ -6,6 +6,9 @@ namespace nucmpp::cfin {
 
     inline double sabrImpliedVolatility(double F, double K, double T, double v, double alpha, double beta, double rho, double shift = 0.0) {
 
+        // dF_t = \alpha_t (F+b)^\Beta dW^1_t 
+        // d\alpha_t = \alpha_t v dW^2_t
+        // Corr (dW^1_t , dW^2_t ) = \rho
 
         double g = (beta - 1.0)*(beta - 1.0)*std::pow(F+shift,beta-1.0)*std::pow(K+shift,beta-1.0)*alpha*alpha;
         double c = (std::pow(F+shift,beta-1.0)-std::pow(K+shift,beta-1.0))*v/(alpha*(1.0-beta)); 

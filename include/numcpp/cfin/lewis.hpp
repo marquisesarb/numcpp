@@ -1,7 +1,7 @@
 #pragma once
 #include <complex>
 #include <numcpp/gquad/gausslaguerre.hpp> 
-#include <numcpp/cfin/blackscholes.hpp>
+#include <numcpp/cfin/blackscholes/cf.hpp>
 
 namespace numcpp::cfin {
 

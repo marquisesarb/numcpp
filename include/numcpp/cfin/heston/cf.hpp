@@ -4,7 +4,6 @@
 
 namespace numcpp::cfin {
 
-
     struct Heston {
 
         double v0, theta, rho, eta, kappa;
@@ -39,7 +38,6 @@ namespace numcpp::cfin {
 
             return lewisImpliedDensityGaussLaguerre(x, characteristicFunction(t), gaussLaguerreQuadratures);
         }
-
 
     };
 }

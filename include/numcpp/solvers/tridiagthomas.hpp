@@ -27,12 +27,23 @@ namespace numcpp::solvers {
         x(d.size()-1) = dp(d.size()-1);
 
         for (size_t i = d.size()-2; i>0; i--) {
+
             x(i) = dp(i) - cp(i)*x(i+1);
 
         }
 
+        x(0) = dp(0) - cp(0)*x(1);
+
         return x;
 
+    }
+
+    inline Eigen::VectorXd tridiagonalMatrixSolverThomasShermanMorrison(const Eigen::SparseMatrix<double>& A, const Eigen::VectorXd& d, const Eigen::VectorXd& u, const Eigen::VectorXd& v) {
+  
+        Eigen::SparseMatrix<double> B = A - u*v.transpose();
+        Eigen::VectorXd y = tridiagonalMatrixSolverThomas(B,d); 
+        Eigen::VectorXd q = tridiagonalMatrixSolverThomas(B,u); 
+        return y - q*v.transpose()*y/(1.0+v.transpose()*q);
     }
 
 }

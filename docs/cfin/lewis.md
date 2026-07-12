@@ -1,4 +1,5 @@
 ### Lewis Stochastic Volatiity framework
+
 Generalization of the lewis framework for a given characteristic function using Gauss-Laguerre quadrature for numerical integration. For more info please check the foowing scientific paper from Lewis:
 
 - [1] Option valuation under stochastic volatility - Lewis (2000) : https://econpapers.repec.org/bookchap/vsvvbooks/ovsv.htm

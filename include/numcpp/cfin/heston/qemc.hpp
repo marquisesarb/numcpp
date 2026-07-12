@@ -1,7 +1,7 @@
 #pragma once 
 #include <tuple>
 #include <numcpp/stats/distributions/normal.hpp>
-#include <numcpp/cfin/heston.hpp>
+#include <numcpp/cfin/heston/cf.hpp>
 
 namespace numcpp::cfin {
 

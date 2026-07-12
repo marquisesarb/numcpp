@@ -1,10 +1,9 @@
-#include <numcpp/cfin/blackscholes.hpp>
+#include <numcpp/cfin/blackscholes/cf.hpp>
 #include <numcpp/stats/distributions/normal.hpp>
 #include <cmath>
 #include <cfloat>
 
 namespace numcpp::cfin::letsberational {
-
 
     double _getNormalizedIntrisicValue(double x, bool isCall) {
 

@@ -24,11 +24,8 @@
 
 ## computational finance 
 
-- [BlackScholes](docs/cfin/blackscholes.md)
+- [BlackScholes](docs/cfin/blackscholes/main.md)
 - [Lewis](docs/cfin/lewis.md)
 - [Heston](docs/cfin/heston.md)
-- [HestonJump](docs/cfin/hestonjump.md)
-- [Bachelier](docs/cfin/bachelier.md)
-- [BaroneAdesiWhaley](docs/cfin/baw.md)
-
+- [Bachelier](docs/cfin/bachelier/main.md)
 

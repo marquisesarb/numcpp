@@ -1,4 +1,4 @@
-#include <numcpp/cfin/heston.hpp>
+#include <numcpp/cfin/heston/cf.hpp>
 #include <cassert>
 
 bool isClose(double a, double b, double tol = 1e-3) {return std::abs(a - b) <= tol;}

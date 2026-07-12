@@ -1,5 +1,5 @@
 #include <cassert>
-#include <numcpp/cfin/blackscholes.hpp>
+#include <numcpp/cfin/blackscholes/cf.hpp>
 
 bool isClose(double a, double b, double tol = 1e-3) {return std::abs(a - b) <= tol;}
 

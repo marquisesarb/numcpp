@@ -2,8 +2,7 @@
 #include <functional>
 #include <cmath>
 #include <numcpp/optim/newtonraphson.hpp>
-#include <numcpp/cfin/blackscholes.hpp>
-
+#include <numcpp/cfin/blackscholes/cf.hpp>
 
 namespace numcpp::cfin {
 

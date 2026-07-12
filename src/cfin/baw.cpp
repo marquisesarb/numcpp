@@ -1,8 +1,7 @@
-#include "numcpp/cfin/blackscholes.hpp"
-#include "numcpp/stats/distributions/normal.hpp"
 #include <functional>
 #include <limits>
-#include <numcpp/cfin/baroneadesiwhaley.hpp>
+#include <numcpp/cfin/blackscholes/baw.hpp>
+#include <numcpp/stats/distributions/normal.hpp>
 
 namespace numcpp::cfin::bawtools {
 
