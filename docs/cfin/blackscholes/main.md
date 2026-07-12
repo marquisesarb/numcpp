@@ -40,7 +40,7 @@ int main() {
     // 13.5218
     std::cout << numcpp::cfin::blackScholesEuropeanNormalizedPrice(x,T,sigma, false)*std::exp(-r*T)*std::sqrt(F*K) << std::endl;
     // 7.9266
-    std::cout << umcpp::cfin::blackScholesImpliedVolatility(modelPutPrice*std::exp(r*T)/std::sqrt(F*K),x,T,false) << std::endl;
+    std::cout << numcpp::cfin::blackScholesImpliedVolatility(modelPutPrice*std::exp(r*T)/std::sqrt(F*K),x,T,false) << std::endl;
     // 0.2
     std::cout << numcpp::cfin::blackScholesImpliedVolatility(modelCallPrice*std::exp(r*T)/std::sqrt(F*K),x,T, true)<< std::endl;
     // 0.2

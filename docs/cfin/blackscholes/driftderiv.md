@@ -5,12 +5,17 @@ We assume the forward price being a driftless geometric brownian motion such as:
 $$
 \frac{dF_t(T)}{F_t(T)} = \sigma_t\left(F_t(T), t\right) dW_t
 $$ 
+
 Thus the dynamic of the log-process $\ln F_t(T)$ is given by: 
+
 $$
 d\ln F_t(T) = -\frac{1}{2}\sigma_t\left(F_t(T)\right)^2 dt + \sigma_t\left(F_t(T), t\right)dW_t
 $$
+
 The relationship between the log-spot price and the log-forward price is given by: 
+
 $$\ln S_t = \lim_{T \rightarrow t} \ln F_t(T)$$
+
 Thus: 
 
 $$
