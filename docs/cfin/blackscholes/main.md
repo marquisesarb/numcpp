@@ -47,3 +47,33 @@ int main() {
 
 }
 ```
+
+##### Pricing european option under Local Volatility using Monte Carlo
+
+
+
+##### Pricing european and american option under Local Volatility using PDE Solver
+
+```cpp
+int main() {
+
+    numcpp::cfin::SSVIPowerLawFlatATM ssvi(-0.5,0.46,0.77,1.0); 
+
+    double mu = .05;
+    double r = 0.01; 
+
+    auto driftFun = [mu](double t) {return mu;};
+    auto discountRateFun = [r](double t) {return r;};
+    auto localVolFun = [ssvi](double k, double t) {return std::sqrt(ssvi.localVariance(k, t));};
+
+    double T = 2.0;
+    double S = 100.0;
+    double F = S*std::exp(mu*T);
+    double K = 100.0; 
+    double x = std::log(F/K); 
+    int N = 400; 
+    int M = 250; 
+    
+
+}
+```

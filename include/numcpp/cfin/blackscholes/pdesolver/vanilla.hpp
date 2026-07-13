@@ -1,6 +1,7 @@
 #pragma once 
 #include <numcpp/cfin/blackscholes/pdesolver/interface.hpp>
 #include <numcpp/solvers/tridiagthomas.hpp>
+#include <iostream>
 
 namespace numcpp::cfin {
 
@@ -24,9 +25,9 @@ namespace numcpp::cfin {
 
                     std::pair<Eigen::SparseMatrix<double>,Eigen::SparseMatrix<double>> mats = flatSigmaCrankNicolsonMatrixes(dx, dt, sigma, 0.0, r, M);
 
-                    for (size_t i = N-1; i>0; i--) {
+                    for (size_t i = N; i>0; i--) {
 
-                        optionValueMatrix.col(i-1) = solvers::tridiagonalMatrixSolverThomas(mats.second, mats.first*optionValueMatrix.col(i));
+                        optionValueMatrix.col(i-1) = numcpp::solvers::tridiagonalMatrixSolverThomas(mats.second, mats.first*optionValueMatrix.col(i));
                         optionValueMatrix.col(i-1)(0) = 2*optionValueMatrix.col(i-1)(1) - optionValueMatrix.col(i-1)(2); 
                         if (isAmerican) computeEarlyExercise(i-1, K, putCallFlag);
                     }
@@ -34,10 +35,11 @@ namespace numcpp::cfin {
                 } else {
 
                     Eigen::SparseMatrix<double> implicitMatrix = flatSigmaImplicitMatrix(dx, dt, sigma, 0.0, r, M);
-                    
-                    for (size_t i = N-1; i>0; i--) {
+         
+                    for (size_t i = N; i>0; i--) {
 
-                        optionValueMatrix.col(i-1) = solvers::tridiagonalMatrixSolverThomas(implicitMatrix, optionValueMatrix.col(i));
+                   
+                        optionValueMatrix.col(i-1) = numcpp::solvers::tridiagonalMatrixSolverThomas(implicitMatrix, optionValueMatrix.col(i));
                         optionValueMatrix.col(i-1)(0) = 2*optionValueMatrix.col(i-1)(1) - optionValueMatrix.col(i-1)(2); 
                         if (isAmerican) computeEarlyExercise(i-1, K, putCallFlag);
                     }
@@ -59,33 +61,37 @@ namespace numcpp::cfin {
                 double dt = T/N;
                 double S = S_;
                 double atmLocalVol = localVolatilityFunction(0.0,T);
-                double xmax = - .5*atmLocalVol*atmLocalVol*T + std::abs(numberSigma)*std::sqrt(T)*atmLocalVol;  
+                double xmax = std::abs(numberSigma)*std::sqrt(T)*atmLocalVol;  
                 double dx = xmax/double(M);
                 double putCallFlag = isCall ? 1.0 : -1.0;
                 double t = T;
 
                 computeLogMoneynessVector(S,dx);
-                computeTerminalPayoff(putCallFlag,K);
                 computeSpotPriceMatrix(S,dt,driftFunction);
+                computeTerminalPayoff(putCallFlag,K);
 
                 if (useCrankNicolson) {
 
-                    for (size_t i = N-1; i>0; i--) {
+                    for (size_t i = N; i>0; i--) {
+                        std::cout << "T at n+1: " << t << std::endl;
                         t -= dt; 
-                        std::pair<Eigen::SparseMatrix<double>,Eigen::SparseMatrix<double>> mats = localCrankNicolsonMatrixes(t, dx,dt, M, driftFunction, localVolatilityFunction, discountRateFunction);
+                        std::cout << "T at n: " << t << std::endl;
+                        std::pair<Eigen::SparseMatrix<double>,Eigen::SparseMatrix<double>> mats = localCrankNicolsonMatrixes(t, dx,dt, M, [](double t) {return .0;}, localVolatilityFunction, discountRateFunction);
                         optionValueMatrix.col(i-1) = solvers::tridiagonalMatrixSolverThomas(mats.second, mats.first*optionValueMatrix.col(i));
                         optionValueMatrix.col(i-1)(0) = 2*optionValueMatrix.col(i-1)(1) - optionValueMatrix.col(i-1)(2); 
                         if (isAmerican) computeEarlyExercise(i-1, K, putCallFlag);
+                        
                     }
 
                 } else {
                     
-                    for (size_t i = N-1; i>0; i--) {
-                        t -= dt; 
-                        Eigen::SparseMatrix<double> implicitMatrix = localImplicitMatrix(t, dx,dt, M, driftFunction, localVolatilityFunction, discountRateFunction);
+                    for (size_t i = N; i>0; i--) {
+                        double t = (i==1) ? timeVector(1) : timeVector(i-1);
+                        Eigen::SparseMatrix<double> implicitMatrix = localImplicitMatrix(t, dx,dt, M, [](double t) {return .0;}, localVolatilityFunction, discountRateFunction);
                         optionValueMatrix.col(i-1) = solvers::tridiagonalMatrixSolverThomas(implicitMatrix, optionValueMatrix.col(i));
                         optionValueMatrix.col(i-1)(0) = 2*optionValueMatrix.col(i-1)(1) - optionValueMatrix.col(i-1)(2); 
                         if (isAmerican) computeEarlyExercise(i-1, K, putCallFlag);
+              
                     }
 
 
@@ -98,8 +104,10 @@ namespace numcpp::cfin {
         
             void computeTerminalPayoff(double putCallFlag, double K) {
 
-                for (size_t i = 0; i<spotPriceMatrix.rows(); i++) {
-                    optionValueMatrix(i, optionValueMatrix.cols()-1) = std::max(putCallFlag*(spotPriceMatrix(i,spotPriceMatrix.cols()-1)-K), 0.0);
+                size_t N = optionValueMatrix.cols();
+      
+                for (size_t i = 0; i<optionValueMatrix.rows(); i++) {
+                    optionValueMatrix.col(N-1)(i) = std::max(putCallFlag*(spotPriceMatrix.col(N-1)(i)-K), 0.0);
                 }
             }
 

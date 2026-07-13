@@ -1,4 +1,5 @@
 #pragma once 
+#include "Eigen/Core"
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -9,14 +10,16 @@ namespace numcpp::cfin {
 
         public: 
             Eigen::VectorXd logMoneynessVector; 
+            Eigen::VectorXd timeVector; 
             Eigen::MatrixXd spotPriceMatrix; 
             Eigen::MatrixXd optionValueMatrix; 
 
             BlackScholesPDESolverInterface(int N, int M) {
 
                 logMoneynessVector = Eigen::VectorXd::Zero(2*M+1); 
-                spotPriceMatrix = Eigen::MatrixXd::Zero(2*M+1, N);
-                optionValueMatrix = Eigen::MatrixXd::Zero(2*M+1, N);
+                timeVector = Eigen::VectorXd::Zero(N+1); 
+                spotPriceMatrix = Eigen::MatrixXd::Zero(2*M+1, N+1);
+                optionValueMatrix = Eigen::MatrixXd::Zero(2*M+1, N+1);
 
             }
 
@@ -48,6 +51,7 @@ namespace numcpp::cfin {
                 double F = S;
                 size_t M = (spotPriceMatrix.rows()-1)/2;
                 spotPriceMatrix(M,0) = S;
+                timeVector(0) = 1e-8;
 
                 for (size_t i = 1; i<=M; i++) {
   
@@ -59,6 +63,7 @@ namespace numcpp::cfin {
                 for (size_t i = 1; i<spotPriceMatrix.cols(); i++) {
 
                     t += dt; 
+                    timeVector(i) = t;
                     F = F*std::exp(driftFunction(t)*dt);
                     spotPriceMatrix(M,i) = F;
 
@@ -153,7 +158,7 @@ namespace numcpp::cfin {
                 Eigen::SparseMatrix<double> A(2*M+1, 2*M+1);
                 std::vector<Eigen::Triplet<double>> coefs;
                 double r = discountRateFunction(T); 
-                double sigma = localVolatilityFunction(-logMoneynessVector(0),T);
+                double sigma = localVolatilityFunction(logMoneynessVector(0),T);
                 double mu = driftFunction(T);
                 double mid = 1.0+dt*r + sigma*sigma*dt/(dx*dx); 
                 double up = -.5*sigma*sigma*dt/(dx*dx) - .5*(mu - .5*sigma*sigma)*dt/dx; 
@@ -167,7 +172,7 @@ namespace numcpp::cfin {
 
                 for (size_t i = 1; i<2*M; i++) {
 
-                    sigma = localVolatilityFunction(-logMoneynessVector(i),T);
+                    sigma = localVolatilityFunction(logMoneynessVector(i),T);
                     mid = 1.0+dt*r + sigma*sigma*dt/(dx*dx); 
                     up = -.5*sigma*sigma*dt/(dx*dx) - .5*(mu - .5*sigma*sigma)*dt/dx; 
                     down = -.5*sigma*sigma*dt/(dx*dx) + .5*(mu - .5*sigma*sigma)*dt/dx; 
@@ -185,7 +190,6 @@ namespace numcpp::cfin {
                 const std::function<double(double)>& driftFunction, 
                 const std::function<double(double,double)>& localVolatilityFunction, 
                 const std::function<double(double)>& discountRateFunction) const {
-
 
                 double r = discountRateFunction(T); 
                 double sigma = localVolatilityFunction(-logMoneynessVector(0),T);
@@ -221,9 +225,11 @@ namespace numcpp::cfin {
                 for (size_t i = 1; i<2*M; i++) {
 
                     sigma = localVolatilityFunction(-logMoneynessVector(i),T);
+
                     imid = 1.0+.5*dt*r + .5*sigma*sigma*dt/(dx*dx); 
                     iup = -.25*sigma*sigma*dt/(dx*dx) - .25*(mu - .5*sigma*sigma)*dt/dx; 
                     idown = -.25*sigma*sigma*dt/(dx*dx) + .25*(mu - .5*sigma*sigma)*dt/dx; 
+
                     emid = df*(1-p);
                     eup = df*(.5*p + .25*(mu - .5*sigma*sigma)*dt/dx); 
                     edown = df*(.5*p - .25*(mu - .5*sigma*sigma)*dt/dx); 

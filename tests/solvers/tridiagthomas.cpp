@@ -1,3 +1,4 @@
+#include "Eigen/Core"
 #include <numcpp/solvers/tridiagthomas.hpp>
 
 bool isClose(double a, double b, double tol = 1e-3) {return std::abs(a - b) <= tol;}
@@ -62,8 +63,10 @@ void testThomasCyclic() {
 
 }
 
+
 int main() {
 
     testThomas();
     testThomasCyclic(); 
+
 }
