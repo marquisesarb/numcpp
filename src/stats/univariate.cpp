@@ -92,6 +92,33 @@ namespace numcpp::stats {
             ((n + 1.0) * populationExcessKurtosis() + 6.0);
     }
 
+    double UnivariateStatistics::autoCorrelation(size_t lag) const {
+
+        if (lag<0 or lag > vector.size()) return std::numeric_limits<double>::quiet_NaN();
+        int n = vector.size()-lag;
+        Eigen::VectorXd x = vector.segment(lag, n); 
+        Eigen::VectorXd y = vector.segment(0, n); 
+
+        double sumxy =0.0; 
+        double sumx =0.0;
+        double sumy =0.0; 
+        double sumysq =0.0; 
+        double sumxsq =0.0; 
+
+
+        for (size_t i=0; i<n; i++) {
+            sumxy += x(i)*y(i);
+            sumxsq += x(i)*x(i);
+            sumx += x(i); 
+            sumysq += y(i)*y(i);
+            sumy += y(i); 
+        }
+
+        return (n*sumxy - sumx*sumy)/std::sqrt((n*sumxsq-sumx*sumx)*(n*sumysq-sumy*sumy));
+        
+
+    }
+
     numcpp::reg::OLS UnivariateStatistics::ar(size_t lag, bool intercept = false) const {
 
         size_t xSize = vector.size()-lag;
@@ -106,7 +133,6 @@ namespace numcpp::stats {
         return numcpp::reg::OLS(Y, X, intercept);
     }
 
-
     UnivariateStatistics UnivariateStatistics::rollingTool(size_t window, const std::function<double(const UnivariateStatistics&)> lambda_) const {
 
         Eigen::VectorXd newVector(vector.size()-window+1);
@@ -115,8 +141,6 @@ namespace numcpp::stats {
 
             newVector(i) = lambda_(segment(i,window));
         }
-
-        
 
         return UnivariateStatistics{newVector};
 

@@ -68,6 +68,9 @@ void testBasicStats() {
     assert(isClose(ar.betas(2), 0.34208, 1e-5)); 
     assert(isClose(ar.betas(3), 0.339985, 1e-5)); 
 
+
+    assert(isClose(univobj.autoCorrelation(1), -0.371171, 1e-5)); 
+
 }
 
 
