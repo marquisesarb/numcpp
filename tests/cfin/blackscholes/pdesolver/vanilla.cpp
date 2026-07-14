@@ -48,8 +48,8 @@ void europeanLocalVolatility(bool useCrankNicolson) {
     double F = S*std::exp(mu*T);
     double K = 100.0; 
     double x = std::log(F/K); 
-    int N = 400; 
-    int M = 200; 
+    int N = 200; 
+    int M = 125; 
     
     std::cout << "Closed Form Price: " << ssvi.normalizedPrice(x, T, false)*std::sqrt(F*K)*std::exp(-r*T) << std::endl;
 

@@ -6,6 +6,7 @@ set(TESTS
     testnumcpp-stats-dist-gamma tests/stats/distributions/gamma.cpp
     testnumcpp-stats-dist-student tests/stats/distributions/tstudent.cpp
     testnumcpp-stats-covmat tests/stats/covmat.cpp
+    testnumcpp-stats-univariate tests/stats/univariate.cpp
     testnumcpp-gquad-glaguerre tests/gquad/gausslaguerre.cpp
     testnumcpp-optim-nraphson tests/optim/nraphson.cpp
     testnumcpp-optim-bisection tests/optim/bisection.cpp
