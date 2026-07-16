@@ -28,9 +28,9 @@ namespace numcpp::cfin {
             return lewisEuropeanNormalizedPriceGaussLaguerre(x,isCall,characteristicFunction(t),gaussLaguerreQuadratures);
         }
 
-        double impliedVolatilityGaussLaguerre(double x, double t, bool isCall, const numcpp::gquad::GaussLaguerreQuadrature& gaussLaguerreQuadratures) {
+        double impliedVolatilityGaussLaguerre(double x, double t, const numcpp::gquad::GaussLaguerreQuadrature& gaussLaguerreQuadratures) {
 
-            return lewisImpliedVolatilityGaussLaguerre(x, t, isCall, characteristicFunction(t),gaussLaguerreQuadratures);
+            return lewisImpliedVolatilityGaussLaguerre(x, t, true, characteristicFunction(t),gaussLaguerreQuadratures);
 
         }
 

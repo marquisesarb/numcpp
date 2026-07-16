@@ -23,44 +23,10 @@ The Euler discretization (presented more in details [here]()) is also implemente
 ```cpp
 int main() {
 
-    double S = 100.0;   
-    double K = 100.0;    
-    double r = 0.05;     
-    double q = 0.02;     
-    double sigma = 0.20;
-    double T = 2.0;     
-
-    double callPrice = 13.5218;
-    double putPrice = 7.9266;
-
-    double F = S*std::exp((r-q)*T);
-    double x = std::log(F/K); 
-    double normalizedSigma = sigma*sqrt(T);
-    std::cout << numcpp::cfin::blackScholesEuropeanNormalizedPrice(x,T,sigma, true)*std::exp(-r*T)*std::sqrt(F*K) << std::endl;
-    // 13.5218
-    std::cout << numcpp::cfin::blackScholesEuropeanNormalizedPrice(x,T,sigma, false)*std::exp(-r*T)*std::sqrt(F*K) << std::endl;
-    // 7.9266
-    std::cout << numcpp::cfin::blackScholesImpliedVolatility(modelPutPrice*std::exp(r*T)/std::sqrt(F*K),x,T,false) << std::endl;
-    // 0.2
-    std::cout << numcpp::cfin::blackScholesImpliedVolatility(modelCallPrice*std::exp(r*T)/std::sqrt(F*K),x,T, true)<< std::endl;
-    // 0.2
-
-}
-```
-
-##### Pricing european option under Local Volatility using Monte Carlo
-
-
-
-##### Pricing european and american option under Local Volatility using PDE Solver
-
-```cpp
-int main() {
-
     numcpp::cfin::SSVIPowerLawFlatATM ssvi(-0.5,0.46,0.77,1.0); 
 
-    double mu = .05;
-    double r = 0.01; 
+    double mu = -.11;
+    double r = 0.07; 
 
     auto driftFun = [mu](double t) {return mu;};
     auto discountRateFun = [r](double t) {return r;};
@@ -71,8 +37,73 @@ int main() {
     double F = S*std::exp(mu*T);
     double K = 100.0; 
     double x = std::log(F/K); 
-    int N = 400; 
-    int M = 250; 
+    int N = 200; 
+    int M = 125; 
+    double sigma = std::sqrt(ssvi.totalVariance(x,T)/T);
+
+    std::cout << "Closed Form European Put Price: " << ssvi.normalizedPrice(x, T, false)*std::sqrt(F*K)*std::exp(-r*T) << std::endl;
+    // Closed Form European Put Price: 50.2866
+
+    auto t1 = std::chrono::high_resolution_clock::now();
+    numcpp::cfin::BlackScholesPDESolverVanilla europeanLocalVol(S,K,T,false,false,driftFun,localVolFun,discountRateFun,N,M, false,10);
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto msEuropeanLocalVol = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    std::cout << "Local Vol PDE European Put Price: " << europeanLocalVol.price() << " (" << msEuropeanLocalVol.count() << " milliseconds)" << std::endl;
+    // Local Vol PDE European Put Price: 50.2268 (175 milliseconds)
+
+    t1 = std::chrono::high_resolution_clock::now();
+    numcpp::cfin::BlackScholesPDESolverVanilla europeanFlatVol(S,K,T,mu,r,sigma,false,false,N,M, false,10);
+    t2 = std::chrono::high_resolution_clock::now();
+    auto msEuropeanFlatVol = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    std::cout << "Flat-Vol PDE European Put Price: " << europeanFlatVol.price() << " (" << msEuropeanFlatVol.count() << " milliseconds)" << std::endl;
+    // Flat-Vol PDE European Put Price: 50.2302 (57 milliseconds)
+
+    t1 = std::chrono::high_resolution_clock::now();
+    numcpp::cfin::BlackScholesPDESolverVanilla americanLocalVol(S,K,T,false,true,driftFun,localVolFun,discountRateFun,N,M, false,10);
+    t2 = std::chrono::high_resolution_clock::now();
+    auto msAmericanLocalVol = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    std::cout << "Local-Vol PDE American Put Price: " << americanLocalVol.price() << " (" << msAmericanLocalVol.count() << " milliseconds)" << std::endl;
+    // Local-Vol PDE American Put Price: 51.4663 (204 milliseconds)
+
+    t1 = std::chrono::high_resolution_clock::now();
+    numcpp::cfin::BlackScholesPDESolverVanilla americanFlatVol(S,K,T,mu,r,sigma,false,true,N,M, false,10);
+    t2 = std::chrono::high_resolution_clock::now();
+    auto msAmericanFlatVol = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    std::cout << "Flat-Vol PDE American Put Price: " << americanFlatVol.price() << " (" << msAmericanFlatVol.count() << " milliseconds)" << std::endl;
+    // Flat-Vol PDE American Put Price: 51.7251 (87 milliseconds)
+
+
+    std::cout << "Closed Form European Call Price: " << ssvi.normalizedPrice(x, T, true)*std::sqrt(F*K)*std::exp(-r*T) << std::endl;
+    // Closed Form European Call Price: 33.1184
+
+    t1 = std::chrono::high_resolution_clock::now();
+    numcpp::cfin::BlackScholesPDESolverVanilla europeanCallLocalVol(S,K,T,true,false,driftFun,localVolFun,discountRateFun,N,M, false,10);
+    t2 = std::chrono::high_resolution_clock::now();
+    auto msEuropeanCallLocalVol = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    std::cout << "Local Vol PDE European Call Price: " << europeanCallLocalVol.price() << " (" << msEuropeanCallLocalVol.count() << " milliseconds)" << std::endl;
+    // Local Vol PDE European Call Price: 32.9583 (176 milliseconds)
+
+    t1 = std::chrono::high_resolution_clock::now();
+    numcpp::cfin::BlackScholesPDESolverVanilla europeanCallFlatVol(S,K,T,mu,r,sigma,true,false,N,M, false,10);
+    t2 = std::chrono::high_resolution_clock::now();
+    auto msEuropeanCallFlatVol = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    std::cout << "Flat-Vol PDE European Call Price: " << europeanCallFlatVol.price() << " (" << msEuropeanCallFlatVol.count() << " milliseconds)" << std::endl;
+    // Flat-Vol PDE European Call Price: 32.9953 (57 milliseconds)
+
+    t1 = std::chrono::high_resolution_clock::now();
+    numcpp::cfin::BlackScholesPDESolverVanilla americanCallLocalVol(S,K,T,true,true,driftFun,localVolFun,discountRateFun,N,M, false,10);
+    t2 = std::chrono::high_resolution_clock::now();
+    auto msAmericanCallLocalVol = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    std::cout << "Local-Vol PDE American Call Price: " << americanCallLocalVol.price() << " (" << msAmericanCallLocalVol.count() << " milliseconds)" << std::endl;
+    // Local-Vol PDE American Call Price: 39.4808 (204 milliseconds)
+
+    t1 = std::chrono::high_resolution_clock::now();
+    numcpp::cfin::BlackScholesPDESolverVanilla americanCallFlatVol(S,K,T,mu,r,sigma,true,true,N,M, false,10);
+    t2 = std::chrono::high_resolution_clock::now();
+    auto msAmericanCallFlatVol = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    std::cout << "Flat-Vol PDE American Call Price: " << americanCallFlatVol.price() << " (" << msAmericanCallFlatVol.count() << " milliseconds)" << std::endl;
+    // Flat-Vol PDE American Call Price: 39.2436 (88 milliseconds)
+
     
 
 }

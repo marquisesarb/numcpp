@@ -15,20 +15,20 @@ double priceEuropeanOptionFromMatrix(const Eigen::MatrixXd& matrix, bool isCall,
 
 int main() {
 
-    auto driftFun = [](double t) {return 0.0;};
+    auto driftFun = [](double t) {return 0.05;};
     double T = 2.0;
     double S = 100.0;
-    double F = S*std::exp(0.0*T);
+    double F = S*std::exp(driftFun(2.0)*T);
     numcpp::cfin::Heston heston{0.05,0.05,0.45,.3,2.0};
     numcpp::cfin::HestonQuadraticExponentialSimulation sim(100.0,T,heston,driftFun, 2000, 500);
     double K = 100.0; 
     double x = std::log(F/K); 
     numcpp::gquad::GaussLaguerreQuadrature gl(128);
 
-    std::cout << "Call monte carlo price: " << priceEuropeanOptionFromMatrix(sim.xMatrix, true, K) << std::endl;
-    std::cout << "Call closed form price: " << heston.europeanNormalizedPriceGaussLaguerre(x,T,true,gl)*sqrt(F*K) << std::endl;
-    std::cout << "Put monte carlo price: " << priceEuropeanOptionFromMatrix(sim.xMatrix, false, K) << std::endl;
-    std::cout << "Put closed form price: " << heston.europeanNormalizedPriceGaussLaguerre(x,T,false,gl)*sqrt(F*K) << std::endl;
+    std::cout << "Call MC price: " << priceEuropeanOptionFromMatrix(sim.xMatrix, true, K) << std::endl;
+    std::cout << "Call semi-closed form price: " << heston.europeanNormalizedPriceGaussLaguerre(x,T,true,gl)*sqrt(F*K) << std::endl;
+    std::cout << "Put MC price: " << priceEuropeanOptionFromMatrix(sim.xMatrix, false, K) << std::endl;
+    std::cout << "Put semi-closed form price: " << heston.europeanNormalizedPriceGaussLaguerre(x,T,false,gl)*sqrt(F*K) << std::endl;
 
     return 0;
 }

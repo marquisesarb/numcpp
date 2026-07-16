@@ -158,7 +158,7 @@ namespace numcpp::cfin {
                 Eigen::SparseMatrix<double> A(2*M+1, 2*M+1);
                 std::vector<Eigen::Triplet<double>> coefs;
                 double r = discountRateFunction(T); 
-                double sigma = localVolatilityFunction(logMoneynessVector(0),T);
+                double sigma = localVolatilityFunction(-logMoneynessVector(0),T);
                 double mu = driftFunction(T);
                 double mid = 1.0+dt*r + sigma*sigma*dt/(dx*dx); 
                 double up = -.5*sigma*sigma*dt/(dx*dx) - .5*(mu - .5*sigma*sigma)*dt/dx; 
@@ -172,7 +172,7 @@ namespace numcpp::cfin {
 
                 for (size_t i = 1; i<2*M; i++) {
 
-                    sigma = localVolatilityFunction(logMoneynessVector(i),T);
+                    sigma = localVolatilityFunction(-logMoneynessVector(i),T);
                     mid = 1.0+dt*r + sigma*sigma*dt/(dx*dx); 
                     up = -.5*sigma*sigma*dt/(dx*dx) - .5*(mu - .5*sigma*sigma)*dt/dx; 
                     down = -.5*sigma*sigma*dt/(dx*dx) + .5*(mu - .5*sigma*sigma)*dt/dx; 
