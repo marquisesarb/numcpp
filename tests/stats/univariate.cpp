@@ -57,11 +57,11 @@ void testBasicStats() {
     }
 
 
-    numcpp::reg::OLS ar = univobj.ar(1, true);
+    numcpp::reg::OLS ar = univobj.ar(1, false, true);
 
     assert(isClose(ar.betas(1), -0.3672, 1e-4)); 
 
-    ar = univobj.ar(4, false);
+    ar = univobj.ar(4, false, false);
 
     assert(isClose(ar.betas(0), -0.0745922, 1e-5)); 
     assert(isClose(ar.betas(1), 0.346834, 1e-5)); 
@@ -70,6 +70,7 @@ void testBasicStats() {
 
 
     assert(isClose(univobj.autoCorrelation(1), -0.371171, 1e-5)); 
+
 
 }
 

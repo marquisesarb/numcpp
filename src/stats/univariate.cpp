@@ -1,3 +1,4 @@
+#include "Eigen/Core"
 #include <numcpp/stats/univariate.hpp>
 #include <limits>
 
@@ -119,15 +120,17 @@ namespace numcpp::stats {
 
     }
 
-    numcpp::reg::OLS UnivariateStatistics::ar(size_t lag, bool intercept = false) const {
+    numcpp::reg::OLS UnivariateStatistics::ar(size_t lag, bool partialCorrelation = false, bool intercept = false) const {
 
         size_t xSize = vector.size()-lag;
         Eigen::MatrixXd X = Eigen::MatrixXd::Zero(xSize, lag);
-        Eigen::VectorXd Y = vector.segment(lag,xSize);
+        UnivariateStatistics seg = UnivariateStatistics{vector.segment(lag,xSize)};
+        Eigen::VectorXd Y = partialCorrelation ? seg.normalized().vector : seg.vector;
 
         for (size_t i =0; i<lag; i++) {
 
-            X.col(lag-1-i) = vector.segment(i,xSize);
+            seg = UnivariateStatistics{vector.segment(i,xSize)};
+            X.col(lag-1-i) = partialCorrelation ? seg.normalized().vector : seg.vector;
         }
 
         return numcpp::reg::OLS(Y, X, intercept);

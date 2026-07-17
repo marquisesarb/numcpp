@@ -26,7 +26,7 @@ namespace numcpp::stats {
         UnivariateStatistics segment(size_t start, size_t n) const;
         UnivariateStatistics rollingTool(size_t window, const std::function<double(const UnivariateStatistics&)> lambda_) const; 
         UnivariateStatistics rollingMean(size_t window) const;
-        numcpp::reg::OLS ar(size_t lag,  bool intercept) const;
+        numcpp::reg::OLS ar(size_t lag,  bool correlation, bool intercept) const;
          
     };
 

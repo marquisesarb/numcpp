@@ -18,22 +18,23 @@ int main() {
 
     numcpp::cfin::SSVIPowerLawFlatATM ssvi(-0.5,0.46,0.77,1.0); 
 
-    auto driftFun = [](double t) {return 0.05;};
+    double mu = -0.11;
+    auto driftFun = [mu](double t) {return mu;};
 
     auto localVolFun = [ssvi](double t, double k) {return std::sqrt(ssvi.localVariance(k, t));};
 
     double T = 2.0;
     double S = 100.0;
-    double F = S*std::exp(0.05*T);
+    double F = S*std::exp(mu*T);
+    double r = 0.07; 
 
-    numcpp::cfin::BlackScholesEulerSimulation sim(100.0,T,driftFun,localVolFun,1000,500);
+    numcpp::cfin::BlackScholesEulerSimulation sim(100.0,T,driftFun,localVolFun,10000,500);
     double K = 100.0; 
     double x = std::log(F/K); 
-    std::cout << ssvi.normalizedPrice(x, T, false)*std::sqrt(F*K) << std::endl;
+    std::cout  << "Call closed form price: " << ssvi.normalizedPrice(x, T, true)*std::sqrt(F*K)*std::exp(-r*T) << std::endl;
+    std::cout << "Call monte carlo price: " << priceEuropeanOptionFromMatrix(sim.xMatrix, true, K)*std::exp(-r*T) << std::endl;
+    std::cout  << "Put closed form price: " << ssvi.normalizedPrice(x, T, false)*std::sqrt(F*K)*std::exp(-r*T) << std::endl;
+    std::cout << "Put monte carlo price: " << priceEuropeanOptionFromMatrix(sim.xMatrix, false, K)*std::exp(-r*T) << std::endl;
 
-    //std::cout << "Call closed form price: " << numcpp::cfin::blackScholesEuropeanNormalizedPrice(x, T, sigma, true)*std::sqrt(K*F) << std::endl;
-    std::cout << "Call monte carlo price: " << priceEuropeanOptionFromMatrix(sim.xMatrix, false, K) << std::endl;
-    //std::cout << "Put closed form price: " << numcpp::cfin::blackScholesEuropeanNormalizedPrice(x, T, sigma, false)*std::sqrt(K*F) << std::endl;
-    //std::cout << "Put monte carlo price: " << priceEuropeanOptionFromMatrix(sim.xMatrix, false, K) << std::endl;
     return 0;
 }
