@@ -105,9 +105,6 @@ namespace numcpp::cfin {
             const Eigen::MatrixXd& uniformMatrix_,
             const Eigen::MatrixXd& uniformMatrix2_) {
 
-            assert(uniformMatrix_.cols() == uniformMatrix2_.cols());
-            assert(uniformMatrix_.rows() == uniformMatrix2_.rows());
-
             params = params_;
             xUniformMatrix = uniformMatrix_; 
             varUniformMatrix = uniformMatrix2_;

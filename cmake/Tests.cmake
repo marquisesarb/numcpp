@@ -13,7 +13,8 @@ set(TESTS
     testnumcpp-optim-secant tests/optim/secant.cpp
     testnumcpp-optim-brent tests/optim/brent.cpp
     testnumcpp-reg-ols tests/regression/ols.cpp
-    testnumcpp-interpolation tests/interpolation/test.cpp
+    testnumcpp-interpolation-linear tests/interpolation/linear.cpp
+    testnumcpp-interpolation-cubicspline tests/interpolation/cubicspline.cpp
     testnumcpp-solvers-tridiagthomas tests/solvers/tridiagthomas.cpp
 
     testnumcpp-cfin-nss tests/cfin/nss.cpp

@@ -1,6 +1,7 @@
 #include <numcpp/cfin/heston/qemc.hpp>
 #include <numcpp/cfin/heston/cf.hpp>
 #include <iostream>
+#include <cassert>
 
 double priceEuropeanOptionFromMatrix(const Eigen::MatrixXd& matrix, bool isCall, double strike) {
 
