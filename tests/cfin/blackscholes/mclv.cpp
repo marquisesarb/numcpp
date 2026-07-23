@@ -2,6 +2,7 @@
 #include <numcpp/cfin/blackscholes/cf.hpp>
 #include <numcpp/cfin/ssvi.hpp>
 #include <iostream>
+#include <cassert>
 
 double priceEuropeanOptionFromMatrix(const Eigen::MatrixXd& matrix, bool isCall, double strike) {
 
