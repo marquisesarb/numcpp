@@ -2,6 +2,7 @@
 #include <map>
 #include <vector>
 #include <limits>
+#include <algorithm>
 
 namespace numcpp::interpolation {
 
