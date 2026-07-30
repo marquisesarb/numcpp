@@ -4,101 +4,93 @@
 
 namespace numcpp::stats {
 
-    double UnivariateStatistics::sum() const {return vector.sum();}
+    double sum(const Eigen::VectorXd& data) {return data.sum();}
 
-    UnivariateStatistics UnivariateStatistics::centered() const {
+    Eigen::VectorXd centered(const Eigen::VectorXd& data) {
 
-        return UnivariateStatistics{vector.array() - mean()};
+        return data.array() - mean(data);
     }
 
-    UnivariateStatistics UnivariateStatistics::normalized() const {
+    Eigen::VectorXd normalized(const Eigen::VectorXd& data) {
 
-        Eigen::VectorXd array = vector.array() - mean(); 
-        Eigen::VectorXd normArray = array/standardDeviation();
-        return UnivariateStatistics{array};
+        return (data.array() - mean(data))/standardDeviation(data);
     }
 
-    UnivariateStatistics UnivariateStatistics::segment(size_t start, size_t n) const {
+    double mean(const Eigen::VectorXd& data) { return data.size()>0 ? data.mean() : std::numeric_limits<double>::quiet_NaN();}
 
-        if (start<0 or start > vector.size()-1) return UnivariateStatistics{};
-        return UnivariateStatistics{vector.segment(start, n)};
-    }
+    double variance(const Eigen::VectorXd& data) {
 
-    double UnivariateStatistics::mean() const { return vector.size()>0 ? vector.mean() : std::numeric_limits<double>::quiet_NaN();}
-
-    double UnivariateStatistics::variance() const {
-
-        if (vector.size()<=0) return std::numeric_limits<double>::quiet_NaN();
+        if (data.size()<=0) return std::numeric_limits<double>::quiet_NaN();
         double M2 =0.0; 
         double mean = 0.0, oldmean =0.0; 
-        for (size_t i =0; i<vector.size();i++ ) {
+        for (size_t i =0; i<data.size();i++ ) {
             oldmean = mean; 
-            mean += (vector(i)-oldmean)/ double(i+1); 
-            M2 += (vector(i)-oldmean)*(vector(i)-mean);
+            mean += (data(i)-oldmean)/ double(i+1); 
+            M2 += (data(i)-oldmean)*(data(i)-mean);
         }
-        return M2/double(vector.size()-1);
+        return M2/double(data.size()-1);
     } 
 
-    double UnivariateStatistics::populationVariance() const { 
+    double populationVariance(const Eigen::VectorXd& data) { 
 
-        if (vector.size()<=0) return std::numeric_limits<double>::quiet_NaN();
-        return variance()*double(vector.size()-1)/double(vector.size());
+        if (data.size()<=0) return std::numeric_limits<double>::quiet_NaN();
+        return variance(data)*double(data.size()-1)/double(data.size());
     }
 
-    double UnivariateStatistics::standardDeviation() const {
+    double standardDeviation(const Eigen::VectorXd& data) {
 
-        if (vector.size()<=0) return std::numeric_limits<double>::quiet_NaN();
-        return std::sqrt(variance());
+        if (data.size()<=0) return std::numeric_limits<double>::quiet_NaN();
+        return std::sqrt(variance(data));
     }
 
-    double UnivariateStatistics::populationStandardDeviation() const {
+    double populationStandardDeviation(const Eigen::VectorXd& data) {
         
-        if (vector.size()<=0) return std::numeric_limits<double>::quiet_NaN();
-        return std::sqrt(populationVariance());
+        if (data.size()<=0) return std::numeric_limits<double>::quiet_NaN();
+        return std::sqrt(populationVariance(data));
     }
 
-    double UnivariateStatistics::populationSkewness() const {
+    double populationSkewness(const Eigen::VectorXd& data) {
 
-        if (vector.size()<=0) return std::numeric_limits<double>::quiet_NaN();
-        Eigen::ArrayXd centered_ = vector.array() - mean();
+        if (data.size()<=0) return std::numeric_limits<double>::quiet_NaN();
+        Eigen::ArrayXd centered_ = data.array() - mean(data);
         double m2 = centered_.square().mean();
         return (m2==0.0) ? 0.0 : centered_.pow(3).mean() / std::pow(m2, 1.5); 
     }
 
-    double UnivariateStatistics::skewness() const {
+    double skewness(const Eigen::VectorXd& data) {
 
-        int n = vector.size();
+        int n = data.size();
         if (n == 0 ||  n < 3) return std::numeric_limits<double>::quiet_NaN();
-        return std::sqrt(n * (n - 1.0)) / (n - 2.0)*populationSkewness();
+        return std::sqrt(n * (n - 1.0)) / (n - 2.0)*populationSkewness(data);
     }
 
-    double UnivariateStatistics::populationExcessKurtosis() const {
+    double populationExcessKurtosis(const Eigen::VectorXd& data) {
 
-        int n = vector.size();
+        int n = data.size();
         if (n == 0) return std::numeric_limits<double>::quiet_NaN();
-        Eigen::ArrayXd centered_ = vector.array() - mean();
+        Eigen::ArrayXd centered_ = data.array() - mean(data);
         double m2 = centered_.square().mean();
         if (m2 == 0.0) return -3.0;
         return (m2==0.0) ? -3.0 : centered_.pow(4).mean() / (m2 * m2) - 3.0;  
     }
 
-    double UnivariateStatistics::excessKurtosis() const {
+    double excessKurtosis(const Eigen::VectorXd& data) {
 
-        int n = vector.size();
+        int n = data.size();
         if (n == 0 ||  n < 4) return std::numeric_limits<double>::quiet_NaN();
         double n1 = (n - 1.0);
         double n2 = (n - 2.0);
         double n3 = (n - 3.0);
         return ((n - 1.0) / ((n - 2.0) * (n - 3.0))) *
-            ((n + 1.0) * populationExcessKurtosis() + 6.0);
+            ((n + 1.0) * populationExcessKurtosis(data) + 6.0);
     }
 
-    double UnivariateStatistics::autoCorrelation(size_t lag) const {
+    double autoCorrelation(const Eigen::VectorXd& data, size_t lag) {
 
-        if (lag<0 or lag > vector.size()) return std::numeric_limits<double>::quiet_NaN();
-        int n = vector.size()-lag;
-        Eigen::VectorXd x = vector.segment(lag, n); 
-        Eigen::VectorXd y = vector.segment(0, n); 
+        if (lag<0 or lag > data.size()) return std::numeric_limits<double>::quiet_NaN();
+        int n = data.size()-lag;
+        Eigen::VectorXd x = data.segment(lag, n); 
+        Eigen::VectorXd y = data.segment(0, n); 
 
         double sumxy =0.0; 
         double sumx =0.0;
@@ -120,36 +112,35 @@ namespace numcpp::stats {
 
     }
 
-    numcpp::reg::OLS UnivariateStatistics::ar(size_t lag, bool partialCorrelation = false, bool intercept = false) const {
+    numcpp::reg::OLS ar(const Eigen::VectorXd& data, size_t lag, bool partialCorrelation = false, bool intercept = false) {
 
-        size_t xSize = vector.size()-lag;
+        size_t xSize = data.size()-lag;
         Eigen::MatrixXd X = Eigen::MatrixXd::Zero(xSize, lag);
-        UnivariateStatistics seg = UnivariateStatistics{vector.segment(lag,xSize)};
-        Eigen::VectorXd Y = partialCorrelation ? seg.normalized().vector : seg.vector;
+        Eigen::VectorXd seg = data.segment(lag,xSize);
+        Eigen::VectorXd Y = partialCorrelation ? normalized(seg) : seg;
 
         for (size_t i =0; i<lag; i++) {
 
-            seg = UnivariateStatistics{vector.segment(i,xSize)};
-            X.col(lag-1-i) = partialCorrelation ? seg.normalized().vector : seg.vector;
+            seg = data.segment(i,xSize);
+            X.col(lag-1-i) = partialCorrelation ? normalized(seg) : seg;
         }
 
         return numcpp::reg::OLS(Y, X, intercept);
     }
 
-    UnivariateStatistics UnivariateStatistics::rollingTool(size_t window, const std::function<double(const UnivariateStatistics&)> lambda_) const {
+    Eigen::VectorXd rollingTool(const Eigen::VectorXd& data, size_t window, const std::function<double(const Eigen::VectorXd&)> lambda_) {
 
-        Eigen::VectorXd newVector(vector.size()-window+1);
+        Eigen::VectorXd newVector(data.size()-window+1);
 
-        for (size_t i = 0; i<vector.size()-window+1; i++) {
+        for (size_t i = 0; i<data.size()-window+1; i++) {
 
-            newVector(i) = lambda_(segment(i,window));
+            newVector(i) = lambda_(data.segment(i,window));
         }
 
-        return UnivariateStatistics{newVector};
-
+        return newVector;
     }
 
-    UnivariateStatistics UnivariateStatistics::rollingMean(size_t window) const {return rollingTool(window, [*this](const UnivariateStatistics& u) {return u.mean();});}
+    Eigen::VectorXd rollingMean(const Eigen::VectorXd& data, size_t window) {return rollingTool(data, window, [](const Eigen::VectorXd& u) {return u.mean();});}
 
 
 
