@@ -3,7 +3,7 @@
 
 bool isClose(double a, double b, double tol = 1e-3) {return std::abs(a - b) <= tol;}
 
-numcpp::stats::UnivariateStatistics univariateStatisticsObject() {
+Eigen::VectorXd getDataset() {
 
     Eigen::VectorXd data(50);
     data << 16, 14, 64, 88, 53, 3, 54, 96, 23, 88, 52,
@@ -12,11 +12,11 @@ numcpp::stats::UnivariateStatistics univariateStatisticsObject() {
         70, 19, 32, 51, 44, 96, 90, 58, 64, 75, 20, 53,
         78, 95, 4, 82;
 
-    return numcpp::stats::UnivariateStatistics{data};
+    return data;
 
 }
 
-numcpp::stats::UnivariateStatistics rollingMean11Result() {
+Eigen::VectorXd rollingMean11Result() {
 
     Eigen::VectorXd vec {{
         50.0909, 50.3636, 57.4545, 54.9091, 55.4545,
@@ -29,47 +29,48 @@ numcpp::stats::UnivariateStatistics rollingMean11Result() {
         54.7273, 60.0909, 65.8182, 61.5455
     }};
 
-    return numcpp::stats::UnivariateStatistics{vec};
+    return vec;
 
 }
 
 void testBasicStats() {
 
-    numcpp::stats::UnivariateStatistics univobj = univariateStatisticsObject();
+    using namespace numcpp::stats;
+    Eigen::VectorXd data = getDataset();
 
-    assert(univobj.mean()==56.06);
-    assert(isClose(univobj.variance(),925.8127,1e-4));
-    assert(isClose(univobj.populationVariance(),907.2964,1e-4));
-    assert(isClose(univobj.standardDeviation(),30.4272,1e-4));
-    assert(isClose(univobj.populationStandardDeviation(),30.1214,1e-4));
-    assert(isClose(univobj.skewness(),-0.2365,1e-4));
-    assert(isClose(univobj.populationSkewness(),-0.2294,1e-4));
-    assert(isClose(univobj.excessKurtosis(),-1.28317,1e-4));
-    assert(isClose(univobj.populationExcessKurtosis(),-1.2760,1e-4));
+    assert(mean(data)==56.06);
+    assert(isClose(variance(data),925.8127,1e-4));
+    assert(isClose(populationVariance(data),907.2964,1e-4));
+    assert(isClose(standardDeviation(data),30.4272,1e-4));
+    assert(isClose(populationStandardDeviation(data),30.1214,1e-4));
+    assert(isClose(skewness(data),-0.2365,1e-4));
+    assert(isClose(populationSkewness(data),-0.2294,1e-4));
+    assert(isClose(excessKurtosis(data),-1.28317,1e-4));
+    assert(isClose(populationExcessKurtosis(data),-1.2760,1e-4));
 
 
-    numcpp::stats::UnivariateStatistics rollMean11 = univobj.rollingMean(11);
-    numcpp::stats::UnivariateStatistics rollMean11Result = rollingMean11Result();
+    Eigen::VectorXd rollMean11 = rollingMean(data, 11);
+    Eigen::VectorXd rollMean11Result = rollingMean11Result();
 
-    for (size_t i = 0; i<rollMean11.vector.size()-1; i++) {
+    for (size_t i = 0; i<rollMean11.size()-1; i++) {
 
-        assert(isClose(rollMean11.vector(i), rollMean11Result.vector(i), 1e-4));
+        assert(isClose(rollMean11(i), rollMean11Result(i), 1e-4));
     }
 
 
-    numcpp::reg::OLS ar = univobj.ar(1, false, true);
+    numcpp::reg::OLS ar_ = ar(data, 1, false, true);
 
-    assert(isClose(ar.betas(1), -0.3672, 1e-4)); 
+    assert(isClose(ar_.betas(1), -0.3672, 1e-4)); 
 
-    ar = univobj.ar(4, false, false);
+    ar_ = ar(data, 4, false, false);
 
-    assert(isClose(ar.betas(0), -0.0745922, 1e-5)); 
-    assert(isClose(ar.betas(1), 0.346834, 1e-5)); 
-    assert(isClose(ar.betas(2), 0.34208, 1e-5)); 
-    assert(isClose(ar.betas(3), 0.339985, 1e-5)); 
+    assert(isClose(ar_.betas(0), -0.0745922, 1e-5)); 
+    assert(isClose(ar_.betas(1), 0.346834, 1e-5)); 
+    assert(isClose(ar_.betas(2), 0.34208, 1e-5)); 
+    assert(isClose(ar_.betas(3), 0.339985, 1e-5)); 
 
 
-    assert(isClose(univobj.autoCorrelation(1), -0.371171, 1e-5)); 
+    assert(isClose(autoCorrelation(data, 1), -0.371171, 1e-5)); 
 
 
 }
