@@ -1,14 +1,13 @@
 #pragma once 
 #include <numcpp/cfin/blackscholes/pdesolver/interface.hpp>
 #include <numcpp/solvers/tridiagthomas.hpp>
-#include <iostream>
 
 namespace numcpp::cfin {
 
     class BlackScholesPDESolverVanilla final: public BlackScholesPDESolverInterface {
 
         public:
-            BlackScholesPDESolverVanilla(double S_, double K, double T, double mu, double r, double sigma, bool isCall, bool isAmerican, int N, int M, bool useCrankNicolson, double numberSigma = 5):
+            BlackScholesPDESolverVanilla(double S_, double K, double T, double mu, double r, double sigma, bool isCall, bool isAmerican, int N, int M, bool useCrankNicolson, double numberSigma = 5):  
             BlackScholesPDESolverInterface(N,M) {
 
                 double dt = T/N;
@@ -73,9 +72,7 @@ namespace numcpp::cfin {
                 if (useCrankNicolson) {
 
                     for (size_t i = N; i>0; i--) {
-                        std::cout << "T at n+1: " << t << std::endl;
                         t -= dt; 
-                        std::cout << "T at n: " << t << std::endl;
                         std::pair<Eigen::SparseMatrix<double>,Eigen::SparseMatrix<double>> mats = localCrankNicolsonMatrixes(t, dx,dt, M, [](double t) {return .0;}, localVolatilityFunction, discountRateFunction);
                         optionValueMatrix.col(i-1) = solvers::tridiagonalMatrixSolverThomas(mats.second, mats.first*optionValueMatrix.col(i));
                         optionValueMatrix.col(i-1)(0) = 2*optionValueMatrix.col(i-1)(1) - optionValueMatrix.col(i-1)(2); 
